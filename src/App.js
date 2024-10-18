@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+const symbol1 = "X"
+const symbol2 = "O"
+
 function Square({ value, onSquareClick }) {
   return (
     <button className="square" onClick={onSquareClick}>
@@ -17,9 +20,9 @@ function Board({ xIsNext, squares, onPlay }) {
     const nextSquares = squares.slice();
 
     if (xIsNext) {
-      nextSquares[i] = "X";
+      nextSquares[i] = symbol1;
     } else {
-      nextSquares[i] = "O";
+      nextSquares[i] = symbol2;
     }
     onPlay(nextSquares);
   }
@@ -29,27 +32,35 @@ function Board({ xIsNext, squares, onPlay }) {
   if (winner) {
     status = "Winner: " + winner;
   } else {
-    status = "Next player: " + (xIsNext ? "X" : "O");
+    status = "Next player: " + (xIsNext ? symbol1 : symbol2);
   }
+
+  const renderSquare = (idx) => (
+    <Square value={squares[idx]} onSquareClick={() => handleClick(idx)} />
+  )
+
+  const renderBoard = () => {
+    const board = [];
+
+    for (let row = 0; row < 3; row++){
+      const squares = []
+      for (let col = 0; col < 3; col++) {
+        squares.push(renderSquare(row * 3 + col))
+      }
+
+      board.push(
+        <div key={row} className="board-row">
+          {squares}
+        </div>
+      );
+    }
+    return board;
+  };
 
   return (
     <>
       <div className="status">{status}</div>
-      <div className="board-row">
-        <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
-        <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
-        <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[3]} onSquareClick={() => handleClick(3)} />
-        <Square value={squares[4]} onSquareClick={() => handleClick(4)} />
-        <Square value={squares[5]} onSquareClick={() => handleClick(5)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
-        <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
-        <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
-      </div>
+      <div>{renderBoard()}</div>
     </>
   );
 }
@@ -77,6 +88,7 @@ export default function Game() {
     } else {
       description = "Go to game start";
     }
+    console.log("move", move)
     return (
       <li key={move}>
         <button onClick={() => jumpTo(move)}>{description}</button>
